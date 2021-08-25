@@ -1,9 +1,10 @@
 .header {
+	background-color: #4b4b4b;
 	height: 50px;
 	display: flex;
 	align-items: center;
-	margin: 40px;
-	border: 1px solid gray;
+	padding: 40px;
+	color: #ffcccc;
 }
 
 .header__title {
@@ -16,4 +17,13 @@
 	width: 50%;
 	display: flex;
 	justify-content: flex-end;
+}
+
+.header__navigation a:first-child {
+	color: #ffaf40;
+}
+
+.header__navigation a:last-child {
+	margin-left: 20px;
+	color: #ffaf40;
 }
