@@ -1,0 +1,19 @@
+.header {
+	height: 50px;
+	display: flex;
+	align-items: center;
+	margin: 40px;
+	border: 1px solid gray;
+}
+
+.header__title {
+	width: 50%;
+	font-size: 40px;
+	font-weight: 700;
+}
+
+.header__navigation {
+	width: 50%;
+	display: flex;
+	justify-content: flex-end;
+}
