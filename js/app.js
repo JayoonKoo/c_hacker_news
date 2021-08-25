@@ -38,7 +38,11 @@ function newsContents() {
 				<a href="#/page/${state.currentPage +1}">다음 페이지</a>
 			</div>
 		</header>
-
+		<main class="main">
+			<ul class="feeds">
+				{{__feeds_items__}}
+			</ul>
+		</main>
 	`
 	container.innerHTML = template;
 }
