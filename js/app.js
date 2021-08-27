@@ -29,7 +29,7 @@ function newsContents() {
 	const paging = 10;
 
 	if (newsFeed.length === 0) {
-		newsFeed = state.newsFeeds =  initFeeds(getData(NEWS_URL));
+		newsFeed = state.newsFeeds = initFeeds(getData(NEWS_URL));
 	}
 
 	const startIndex = paging*(currentPage -1);
@@ -90,8 +90,12 @@ function makeComments(comments, called=0) {
 
 function newsDetail(id, index) {
 	const news = getData(CONTENT_URL.replace("@id", id));
+
 	const {title, comments} = news;
-	state.newsFeeds[index].read = true;
+	console.log(state.newsFeeds);
+	if (state.newsFeeds.length !== 0) {
+		state.newsFeeds[index].read = true;
+	}
 	
 	let template = `
 		<header class="header detail">
@@ -126,7 +130,7 @@ function router() {
 	}
 }
 
-router();
 
 window.addEventListener("hashchange", router);
-getData(NEWS_URL);
+
+router();
