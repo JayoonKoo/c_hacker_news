@@ -7,6 +7,20 @@
 	color: #ffcccc;
 }
 
+.header.detail {
+	height: auto;
+	padding: 10px;
+}
+.header.detail button {
+	margin-left: auto;
+	border: none;
+	cursor: pointer;
+	background-color: #ffcccc;
+}
+.header.detail button:hover {
+	background-color: rgba(0,0,0,.1);
+}
+
 .header__title {
 	width: 50%;
 	font-size: 40px;
