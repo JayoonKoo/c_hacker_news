@@ -25,6 +25,8 @@ function initFeeds(feeds) {
 
 function newsContents() {
 	let newsFeed = state.newsFeeds;
+	const currentPage = state.currentPage;
+	const paging = 10;
 
 	if (newsFeed.length === 0) {
 		newsFeed = state.newsFeeds =  initFeeds(getData(NEWS_URL));
@@ -34,8 +36,8 @@ function newsContents() {
 		<header class="header">
 			<h1 class="header__title">Kush News</h1>
 			<div class="header__navigation">
-				<a href="#/page/${state.currentPage -1}">이전 페이지</a>
-				<a href="#/page/${state.currentPage +1}">다음 페이지</a>
+				<a href="#/page/${currentPage === 1? currentPage : currentPage -1}">이전 페이지</a>
+				<a href="#/page/${currentPage +1}">다음 페이지</a>
 			</div>
 		</header>
 		<main class="main">
@@ -44,6 +46,25 @@ function newsContents() {
 			</ul>
 		</main>
 	`
+
+	const startIndex = paging*(currentPage -1);
+	const maxIndex = Math.ceil(newsFeed.length);
+	const endIndex = currentPage === maxIndex ? newsFeed : startIndex + 10;
+
+	const newsList = [];
+	for (let i=startIndex; i<endIndex; i++ ) {
+		const {comments_count, id, title, url} = newsFeed[i];
+		newsList.push(`
+			<li class="feeds__news">
+				<a class="feeds__link--detail" href="/#/show/${id}">${title}</a>
+				<span class="feeds__commetns-count">${comments_count}</span>
+				<a class="feeds__link--origin" href="${url}">원문보기</a>
+			</li>
+		`);
+	}
+
+	template = template.replace('{{__feeds_items__}}', newsList.join(''));
+	
 	container.innerHTML = template;
 }
 
