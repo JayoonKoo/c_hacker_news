@@ -98,8 +98,8 @@ function newsDetail(id, index) {
 			<button><a href="/#/page/${state.currentPage}">x<a></button>
 		</header>
 		<article class="article">
-			<h1>${title}</h1>
-			<div class="commetns">
+			<h1 class="article__title">${title}</h1>
+			<div class="comments">
 				{{__comment__}}
 			</div>
 		</article>
