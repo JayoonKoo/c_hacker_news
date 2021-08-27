@@ -1,0 +1,35 @@
+.main {
+}
+
+
+/* feeds */
+.feeds {
+	margin: 50px 100px;
+}
+
+.feeds__news {
+	border-radius: 10px;
+	background-color: #808e9b;
+	height: 120px;
+	margin-bottom: 50px;
+	cursor: pointer;	
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, .1);
+}
+.feeds__news:hover {
+	background-color: #485460;
+}
+
+.feeds__link {
+	display: block;
+	height: 100%;
+	color: #fff;
+	font-size: 30px;
+	display: flex;
+	align-items: center;
+	padding: 0 50px;
+}
+
+.feeds__commetns-count {
+	margin-left: auto;
+	font-size: 20px;
+}
