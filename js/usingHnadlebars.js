@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import {contents, detail} from "./Template.js";
 
 
 const ajax = new XMLHttpRequest();
@@ -11,33 +12,10 @@ const state = {
 	newsFeeds: [],
 }
 
-const source = `
-<header class="header">
-	<h1 class="header__title">Kush News</h1>
-	<div class="header__navigation">
-		<a href="#/page/{{previousPage}}">이전 페이지</a>
-		<a href="#/page/{{nextPage}}">다음 페이지</a>
-	</div>
-</header>
-<main class="main">
-	{{#if hasNews}}
-	<ul class="feeds">
-		{{#each newsList}}
-		<li class="feeds__news {{className}}">
-			<a class="feeds__link" href="{{href}}">
-				{{title}}
-				<span class="feeds__commetns-count">댓글 개수 ({{comments_count}})</span>
-			</a>
-		</li>
-		{{/each}}
-	</ul>
-	{{else}}
-	<div>뉴스가 없습니다.</div>
-	{{/if}}
-</main>
-`
 
-let template = Handlebars.compile(source);
+
+let contensTemplate = Handlebars.compile(contents);
+let detailTemplate = Handlebars.compile(detail);
 
 
 function getData(url) {
@@ -84,6 +62,21 @@ function newsContents() {
 	}
 }
 
+function newsDetail(id, index) {
+	const news = getData(CONTENT_URL.replace("@id", id));
+
+	const {title, comments} = news;
+	state.title = title;
+	if (state.newsFeeds.length !== 0) {
+		state.newsFeeds[index].read = true;
+	}
+
+	return detailTemplate(state);
+	// template = template.replace("{{__comment__}}",makeComments(comments));
+
+	// container.innerHTML = template;
+}
+
 
 function router() {
 	const path = location.hash;
@@ -92,7 +85,8 @@ function router() {
 		newsContents();
 	} else if (path.substr(1).includes('/show/')) {
 		const [,, index, id] = path.split('/');
-		newsDetail(id, index);
+		container.innerHTML = newsDetail(id, index);
+		return;
 	} else if (path.substr(1).includes('/page/')) {
 		state.currentPage = Number(path.split('/').pop());
 		newsContents();
@@ -100,7 +94,7 @@ function router() {
 		alert('url이 올바르지 않습니다.');
 	}
 
-	container.innerHTML = template(state);
+	container.innerHTML = contensTemplate(state);
 }
 
 
