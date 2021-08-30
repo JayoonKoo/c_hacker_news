@@ -15,7 +15,6 @@ const state = {
 
 
 let contensTemplate = Handlebars.compile(contents);
-let detailTemplate = Handlebars.compile(detail);
 
 
 function getData(url) {
@@ -62,7 +61,26 @@ function newsContents() {
 	}
 }
 
-function newsDetail(id, index) {
+function makeComments(comments, called=0) {
+	const commentList = [];
+	for (let comment of comments) {
+		const {content, user, time_ago} = comment;
+		commentList.push(`
+			<div class="comment" style="padding-left: ${called*40}px">
+				<h4 class="comment__user">${user} <span>${time_ago}</span></h4>
+				${content}
+			</div>
+		`)
+
+		if (comment.comments.length !== 0) {
+			commentList.push(makeComments(comment.comments, called +1));
+		}
+	}
+
+	return commentList.join("");
+}
+
+function newsDetail(id, index, detail) {
 	const news = getData(CONTENT_URL.replace("@id", id));
 
 	const {title, comments} = news;
@@ -70,9 +88,10 @@ function newsDetail(id, index) {
 	if (state.newsFeeds.length !== 0) {
 		state.newsFeeds[index].read = true;
 	}
+	detail = detail.replace("{{__comments__}}", makeComments(comments));
+	let detailTemplate = Handlebars.compile(detail);
 
 	return detailTemplate(state);
-	// template = template.replace("{{__comment__}}",makeComments(comments));
 
 	// container.innerHTML = template;
 }
@@ -85,7 +104,7 @@ function router() {
 		newsContents();
 	} else if (path.substr(1).includes('/show/')) {
 		const [,, index, id] = path.split('/');
-		container.innerHTML = newsDetail(id, index);
+		container.innerHTML = newsDetail(id, index, detail);
 		return;
 	} else if (path.substr(1).includes('/page/')) {
 		state.currentPage = Number(path.split('/').pop());

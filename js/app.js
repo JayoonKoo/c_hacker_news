@@ -8,6 +8,26 @@ const state = {
 	newsFeeds: [],
 }
 
+const source = `
+<header class="header">
+	<h1 class="header__title">Kush News</h1>
+	<div class="header__navigation">
+		<a href="#/page/${currentPage === 1? currentPage : currentPage -1}">이전 페이지</a>
+		<a href="#/page/${currentPage === maxIndex? maxIndex : currentPage +1}">다음 페이지</a>
+	</div>
+</header>
+<main class="main">
+	<ul class="feeds">
+		<li class="feeds__news ${read? "red": ""}">
+			<a class="feeds__link" href="/#/show/${i}/${id}">
+				${title}
+				<span class="feeds__commetns-count">댓글 개수 (${comments_count})</span>
+			</a>
+		</li>
+	</ul>
+</main>
+`
+
 function getData(url) {
 	ajax.open('GET', url, false);
 	ajax.send();
@@ -92,7 +112,6 @@ function newsDetail(id, index) {
 	const news = getData(CONTENT_URL.replace("@id", id));
 
 	const {title, comments} = news;
-	console.log(state.newsFeeds);
 	if (state.newsFeeds.length !== 0) {
 		state.newsFeeds[index].read = true;
 	}

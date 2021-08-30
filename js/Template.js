@@ -31,7 +31,7 @@ export const detail = `
 		<article class="article">
 			<h1 class="article__title">{{title}}</h1>
 			<div class="comments">
-				{{__comment__}}
+				{{__comments__}}
 			</div>
 		</article>
 	`;
