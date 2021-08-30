@@ -1,3 +1,7 @@
+import Handlebars from "handlebars";
+import {contents, detail} from "./Template.js";
+
+
 const ajax = new XMLHttpRequest();
 const NEWS_URL = "https://api.hnpwa.com/v0/news/1.json";
 const CONTENT_URL = "https://api.hnpwa.com/v0/item/@id.json";
@@ -8,25 +12,10 @@ const state = {
 	newsFeeds: [],
 }
 
-const source = `
-<header class="header">
-	<h1 class="header__title">Kush News</h1>
-	<div class="header__navigation">
-		<a href="#/page/${currentPage === 1? currentPage : currentPage -1}">이전 페이지</a>
-		<a href="#/page/${currentPage === maxIndex? maxIndex : currentPage +1}">다음 페이지</a>
-	</div>
-</header>
-<main class="main">
-	<ul class="feeds">
-		<li class="feeds__news ${read? "red": ""}">
-			<a class="feeds__link" href="/#/show/${i}/${id}">
-				${title}
-				<span class="feeds__commetns-count">댓글 개수 (${comments_count})</span>
-			</a>
-		</li>
-	</ul>
-</main>
-`
+
+
+let contensTemplate = Handlebars.compile(contents);
+
 
 function getData(url) {
 	ajax.open('GET', url, false);
@@ -51,42 +40,25 @@ function newsContents() {
 	if (newsFeed.length === 0) {
 		newsFeed = state.newsFeeds = initFeeds(getData(NEWS_URL));
 	}
+	state.hasNews = state.newsFeeds.length > 0;
 
 	const startIndex = paging*(currentPage -1);
 	const maxIndex = Math.ceil(newsFeed.length/10);
 	const endIndex = currentPage === maxIndex ? newsFeed.length : startIndex + 10;
 
-	let template = `
-		<header class="header">
-			<h1 class="header__title">Kush News</h1>
-			<div class="header__navigation">
-				<a href="#/page/${currentPage === 1? currentPage : currentPage -1}">이전 페이지</a>
-				<a href="#/page/${currentPage === maxIndex? maxIndex : currentPage +1}">다음 페이지</a>
-			</div>
-		</header>
-		<main class="main">
-			<ul class="feeds">
-				{{__feeds_items__}}
-			</ul>
-		</main>
-	`
-
-	const newsList = [];
+	state.previousPage = currentPage === 1? currentPage : currentPage -1;
+	state.nextPage = currentPage === maxIndex? maxIndex : currentPage +1
+	
+	state.newsList = [];
 	for (let i=startIndex; i<endIndex; i++ ) {
 		const {comments_count, id, title, read} = newsFeed[i];
-		newsList.push(`
-			<li class="feeds__news ${read? "red": ""}">
-				<a class="feeds__link" href="/#/show/${i}/${id}">
-					${title}
-					<span class="feeds__commetns-count">댓글 개수 (${comments_count})</span>
-				</a>
-			</li>
-		`);
+		state.newsList.push({
+			className: read? "red" : "",
+			href: `/#/show/${i}/${id}`,
+			title: title,
+			comments_count: comments_count,
+		});
 	}
-
-	template = template.replace('{{__feeds_items__}}', newsList.join(''));
-	
-	container.innerHTML = template;
 }
 
 function makeComments(comments, called=0) {
@@ -108,30 +80,22 @@ function makeComments(comments, called=0) {
 	return commentList.join("");
 }
 
-function newsDetail(id, index) {
+function newsDetail(id, index, detail) {
 	const news = getData(CONTENT_URL.replace("@id", id));
 
 	const {title, comments} = news;
+	state.title = title;
 	if (state.newsFeeds.length !== 0) {
 		state.newsFeeds[index].read = true;
 	}
-	
-	let template = `
-		<header class="header detail">
-			<button><a href="/#/page/${state.currentPage}">x<a></button>
-		</header>
-		<article class="article">
-			<h1 class="article__title">${title}</h1>
-			<div class="comments">
-				{{__comment__}}
-			</div>
-		</article>
-	`;
+	detail = detail.replace("{{__comments__}}", makeComments(comments));
+	let detailTemplate = Handlebars.compile(detail);
 
-	template = template.replace("{{__comment__}}",makeComments(comments));
+	return detailTemplate(state);
 
-	container.innerHTML = template;
+	// container.innerHTML = template;
 }
+
 
 function router() {
 	const path = location.hash;
@@ -140,13 +104,16 @@ function router() {
 		newsContents();
 	} else if (path.substr(1).includes('/show/')) {
 		const [,, index, id] = path.split('/');
-		newsDetail(id, index);
+		container.innerHTML = newsDetail(id, index, detail);
+		return;
 	} else if (path.substr(1).includes('/page/')) {
 		state.currentPage = Number(path.split('/').pop());
 		newsContents();
 	} else {
 		alert('url이 올바르지 않습니다.');
 	}
+
+	container.innerHTML = contensTemplate(state);
 }
 
 
